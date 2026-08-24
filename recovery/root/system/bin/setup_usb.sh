@@ -1,4 +1,14 @@
 #!/system/bin/sh
+# Ensure /dev/block/by-name exists (Unisoc platform-path compat symlink)
+if [ ! -e /dev/block/by-name ]; then
+    for d in /dev/block/platform/*/by-name /dev/block/platform/*/*/by-name /dev/block/platform/*/*/*/by-name; do
+        if [ -d "$d" ]; then
+            ln -s "$d" /dev/block/by-name 2>/dev/null
+            break
+        fi
+    done
+fi
+
 # Detect the available UDC and expose it via sys.usb.controller so the
 # configfs gadget triggers in init.rc can bind adb/fastboot to it.
 i=0

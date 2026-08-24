@@ -1,6 +1,11 @@
 #add for board init.rc for recovery mode
 import /init.recovery.common.rc
 
+on init
+    # Unisoc puts by-name under the platform path; create the compat
+    # symlink so /dev/block/by-name/* works for TWRP fstab and twrp.flags
+    symlink /dev/block/platform/soc/soc\:ap-apb/201d0000.sdio/by-name /dev/block/by-name
+
 service setup_usb /system/bin/setup_usb.sh
     user root
     group root shell
