@@ -7,6 +7,15 @@
 
 LOCAL_PATH := device/realme/ussi_arm64
 
+# USB gadget controller and recovery USB ids (stock values).
+# Without sys.usb.controller the configfs gadget never binds to a UDC
+# and the phone is not detected by any host.
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    sys.usb.controller=musb-hdrc.1.auto \
+    ro.recovery.usb.vid=18D1 \
+    ro.recovery.usb.adb.pid=D001 \
+    ro.recovery.usb.fastboot.pid=4EE0
+
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_system=true \
     POSTINSTALL_PATH_system=system/bin/otapreopt_script \

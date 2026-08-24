@@ -1,8 +1,15 @@
 #add for board init.rc for recovery mode
 import /init.recovery.common.rc
 
+service setup_usb /system/bin/setup_usb.sh
+    user root
+    group root shell
+    oneshot
+    seclabel u:r:su:s0
+
 on boot
     start boot-hal-1-0
     start health-hal-2-1
+    start setup_usb
     insmod /lib/modules/sc27xx_tsensor_thermal.ko
     insmod /lib/modules/thermal-generic-adc.ko

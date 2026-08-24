@@ -142,6 +142,9 @@ TW_FRAMERATE := 60
 TW_THEME := portrait_hdpi
 TW_EXTRA_LANGUAGES := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
+# chipone CTS touch dies after suspend/resume (ESD reset + firmware reload
+# fails), so never let the screen time out.
+TW_NO_SCREEN_TIMEOUT := true
 TW_USE_TOOLBOX := true
 TW_USE_LEGACY_BATTERY_SERVICES := true
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
