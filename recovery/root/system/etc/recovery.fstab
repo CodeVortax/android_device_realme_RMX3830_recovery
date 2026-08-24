@@ -12,6 +12,6 @@ vendor_dlkm                              /vendor_dlkm        erofs   ro wait,avb
 /dev/block/sdd1                          /usb_otg            auto    defaults     defaults
 
 # userdata
-/dev/block/by-name/userdata              /data               f2fs    flags=display="Data";storage;wipeingui;backup=1
-/dev/block/by-name/userdata              /data               ext4    flags=display="Data";storage;wipeingui;backup=1
+/dev/block/by-name/userdata              /data               f2fs    defaults     wait,check,formattable
+/dev/block/by-name/userdata              /data               ext4    defaults     wait,check,formattable
 /dev/block/by-name/misc                  /misc               emmc    defaults     defaults
