@@ -256,29 +256,52 @@ on boot
 # which writes FunctionFS descriptors ~0.8 s later. setup_usb.sh re-binds
 # the UDC once descriptors are in place.
 
-on property:sys.usb.config=mtp,adb && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+# TWRP Enable_MTP flow: sys.usb.config=none -> fork MtpServer -> sys.usb.config=mtp,adb.
+# At that moment adbd is stopped and sys.usb.ffs.ready=0, so gating this block on
+# ffs.ready never fires. Mirror stock AOSP UsbDeviceManager instead: assemble the
+# config and restart adbd here; adbd writes its FunctionFS descriptors and sets
+# sys.usb.ffs.ready=1, then the ready-gated block below fixes up idProduct. The
+# MTP server writes its own descriptors ~0.8 s after fork; setup_usb.sh retries
+# the UDC bind every second until both functions are ready.
+on property:sys.usb.config=mtp,adb && property:sys.usb.configfs=1
     write /config/usb_gadget/g1/idVendor 0x18D1
-    write /config/usb_gadget/g1/idProduct 0x4EE2
     write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "mtp_adb"
     rm /config/usb_gadget/g1/configs/b.1/f1
     rm /config/usb_gadget/g1/configs/b.1/f2
     rm /config/usb_gadget/g1/configs/b.1/f3
     symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
     symlink /config/usb_gadget/g1/functions/ffs.mtp /config/usb_gadget/g1/configs/b.1/f2
-    setprop sys.usb.ffs.mtp.ready 1
     setprop sys.usb.state ${sys.usb.config}
+    start adbd
 
-on property:sys.usb.config=sideload,mtp && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+# Parsed after hw/init.rc, so this overrides its ready-gated idProduct 0xD001.
+on property:sys.usb.config=mtp,adb && property:sys.usb.configfs=1 && property:sys.usb.ffs.ready=1
+    write /config/usb_gadget/g1/idProduct 0x4EE2
+
+on property:sys.usb.config=sideload,mtp && property:sys.usb.configfs=1
     write /config/usb_gadget/g1/idVendor 0x18D1
-    write /config/usb_gadget/g1/idProduct 0x4EE1
     write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "sideload_mtp"
     rm /config/usb_gadget/g1/configs/b.1/f1
     rm /config/usb_gadget/g1/configs/b.1/f2
     rm /config/usb_gadget/g1/configs/b.1/f3
     symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
     symlink /config/usb_gadget/g1/functions/ffs.mtp /config/usb_gadget/g1/configs/b.1/f2
-    setprop sys.usb.ffs.mtp.ready 1
     setprop sys.usb.state ${sys.usb.config}
+    start adbd
+
+on property:sys.usb.config=sideload,mtp && property:sys.usb.configfs=1 && property:sys.usb.ffs.ready=1
+    write /config/usb_gadget/g1/idProduct 0x4EE1
+
+# Clean up MTP links when leaving the composite configs, so a later plain
+# adb/fastboot bind does not carry a dead ffs.mtp function. These run after the
+# hw/init.rc blocks for the same trigger (parse order) and while still unbound.
+on property:sys.usb.config=none && property:sys.usb.configfs=1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    rm /config/usb_gadget/g1/configs/b.1/f3
+
+on property:sys.usb.config=adb && property:sys.usb.configfs=1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    rm /config/usb_gadget/g1/configs/b.1/f3
 
 # Keep recovery USB id consistent with stock recovery (hw/init.rc only sets idProduct)
 on property:sys.usb.config=adb && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
