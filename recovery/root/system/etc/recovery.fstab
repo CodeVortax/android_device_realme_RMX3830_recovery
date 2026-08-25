@@ -19,10 +19,6 @@ odm                                      /odm                erofs   ro    wait,
 odm                                      /odm                ext4    ro    wait,logical,slotselect
 vendor                                   /vendor             erofs   ro    wait,logical,slotselect
 vendor                                   /vendor             ext4    ro    wait,logical,slotselect
-vendor_dlkm                              /vendor_dlkm        erofs   ro    wait,logical,slotselect
-vendor_dlkm                              /vendor_dlkm        ext4    ro    wait,logical,slotselect
-system_dlkm                              /system_dlkm        erofs   ro    wait,logical,slotselect
-system_dlkm                              /system_dlkm        ext4    ro    wait,logical,slotselect
 
 # metadata is needed for Virtual A/B snapshot handling
 /dev/block/by-name/metadata              /metadata           f2fs    defaults     wait,check,formattable
