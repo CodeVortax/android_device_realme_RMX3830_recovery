@@ -9,8 +9,7 @@ if [ ! -e /dev/block/by-name ]; then
     done
 fi
 
-# Detect the available UDC and expose it via sys.usb.controller so the
-# configfs gadget triggers in init.rc can bind adb/fastboot to it.
+# Wait for the UDC to appear (musb modules are insmodded in recovery.sprd.rc).
 i=0
 UDC=""
 while [ -z "$UDC" ] && [ "$i" -lt 30 ]; do
@@ -20,21 +19,27 @@ while [ -z "$UDC" ] && [ "$i" -lt 30 ]; do
             break
         fi
     done
-    if [ -z "$UDC" ]; then
-        sleep 1
-        i=$((i+1))
-    fi
+    [ -z "$UDC" ] && sleep 1
+    i=$((i+1))
 done
 
-if [ -n "$UDC" ]; then
-    setprop sys.usb.controller "$UDC"
-    # Bind immediately if adbd already prepared the gadget but no UDC
-    # was written yet.
-    if [ -d /config/usb_gadget/g1 ]; then
+if [ -z "$UDC" ]; then
+    exit 0
+fi
+
+setprop sys.usb.controller "$UDC"
+
+# The standard sys.usb.config triggers in hw/init.rc and recovery.sprd.rc
+# assemble and bind the gadget themselves, but they may fire before the UDC
+# exists (write to g1/UDC fails silently), or before a FunctionFS client
+# (TWRP mtp server, fastbootd) has written its descriptors. Watch for an
+# assembled-but-unbound gadget and bind it whenever needed.
+while :; do
+    if [ -e /config/usb_gadget/g1/configs/b.1/f1 ]; then
         cur=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
-        if [ -z "$cur" ] || [ "$cur" = "none" ]; then
+        if [ -z "$cur" ]; then
             echo "$UDC" > /config/usb_gadget/g1/UDC 2>/dev/null
-            setprop sys.usb.state adb
         fi
     fi
-fi
+    sleep 1
+done

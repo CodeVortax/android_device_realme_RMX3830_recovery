@@ -4,9 +4,29 @@
 /dev/block/by-name/sml                   /sml                emmc    defaults slotselect
 /dev/block/by-name/trustos               /tos                emmc    defaults slotselect
 /dev/block/by-name/teecfg                /teecfg             emmc    defaults slotselect
-system                                   /system             ext4    ro wait,avb=vbmeta_system,logical,first_stage_mount,slotselect
-vendor                                   /vendor             erofs   ro wait,avb=vbmeta_vendor,logical,first_stage_mount,slotselect
-vendor_dlkm                              /vendor_dlkm        erofs   ro wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect
+# Dynamic partitions from super. Both erofs and ext4 are listed for every
+# partition: TWRP tries them in order and uses whichever mounts (the shipped
+# ROM has ext4 system but erofs vendor/odm, and this can change between ROMs).
+# No avb/first_stage_mount here - TWRP manages the logical mappings itself
+# via /dev/block/mapper created by first-stage init.
+system                                   /system             erofs   ro    wait,logical,slotselect
+system                                   /system             ext4    ro    wait,logical,slotselect
+system_ext                               /system_ext         erofs   ro    wait,logical,slotselect
+system_ext                               /system_ext         ext4    ro    wait,logical,slotselect
+product                                  /product            erofs   ro    wait,logical,slotselect
+product                                  /product            ext4    ro    wait,logical,slotselect
+odm                                      /odm                erofs   ro    wait,logical,slotselect
+odm                                      /odm                ext4    ro    wait,logical,slotselect
+vendor                                   /vendor             erofs   ro    wait,logical,slotselect
+vendor                                   /vendor             ext4    ro    wait,logical,slotselect
+vendor_dlkm                              /vendor_dlkm        erofs   ro    wait,logical,slotselect
+vendor_dlkm                              /vendor_dlkm        ext4    ro    wait,logical,slotselect
+system_dlkm                              /system_dlkm        erofs   ro    wait,logical,slotselect
+system_dlkm                              /system_dlkm        ext4    ro    wait,logical,slotselect
+
+# metadata is needed for Virtual A/B snapshot handling
+/dev/block/by-name/metadata              /metadata           f2fs    defaults     wait,check,formattable
+/dev/block/by-name/metadata              /metadata           ext4    defaults     wait,check,formattable
 
 /dev/block/mmcblk1p1                     /external_sd        auto    defaults     defaults
 /dev/block/sdd1                          /usb_otg            auto    defaults     defaults

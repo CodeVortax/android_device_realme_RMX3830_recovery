@@ -104,6 +104,11 @@ jobs:
         curl -fL "https://raw.githubusercontent.com/kyros70/android_bootable_recovery/android-12.1/minuitwrp/graphics_drm.cpp" \
           -o "${{ env.ORANGEFOX_ROOT }}/bootable/recovery/minuitwrp/graphics_drm.cpp"
         echo "Patched graphics_drm.cpp: $(wc -l < ${{ env.ORANGEFOX_ROOT }}/bootable/recovery/minuitwrp/graphics_drm.cpp) lines"
+
+    - name: Apply fastbootd userspace patch
+      run: |
+        cd ${{ env.ORANGEFOX_ROOT }}
+        git apply --verbose ./${{ inputs.DEVICE_PATH }}/patches/twfunc-fastbootd-userspace.patch
     
     - name: Building OrangeFox
       run: |

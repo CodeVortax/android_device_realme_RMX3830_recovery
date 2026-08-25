@@ -148,6 +148,11 @@ jobs:
           -b android-12.1 bootable/recovery
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
+    - name: Apply fastbootd userspace patch
+      run: |
+        git apply --verbose ./${{ github.event.inputs.DEVICE_PATH }}/patches/twfunc-fastbootd-userspace.patch
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:

@@ -222,8 +222,14 @@ on property:ro.product.name=*
 service setup_usb /system/bin/setup_usb.sh
     user root
     group root shell
-    oneshot
     seclabel u:r:su:s0
+
+on init
+    # The Unisoc bootloader does not export androidboot.slot_suffix on this
+    # device, so ro.boot.slot_suffix is empty and TWRP guesses slot B
+    # (PartitionManager treats any suffix != "_a" as B). First-stage init maps
+    # the _a logical partitions, so default to A when nothing was set.
+    setprop ro.boot.slot_suffix ${ro.boot.slot_suffix:-_a}
 
 on boot
     # RTC (fixes 1969/1970 epoch date)
@@ -234,8 +240,49 @@ on boot
     insmod /vendor/lib/modules/phy-sprd-qogirl6.ko
     insmod /vendor/lib/modules/musb_hdrc.ko
     insmod /vendor/lib/modules/musb_sprd.ko
-    start boot-hal-1-0
     start health-hal-2-1
     start setup_usb
     insmod /lib/modules/sc27xx_tsensor_thermal.ko
     insmod /lib/modules/thermal-generic-adc.ko
+
+    # FunctionFS instance for MTP/PTP (TWRP mtp server opens /dev/ffs-mtp/ep0).
+    # ffs.adb/fastboot instances are created by /system/etc/init/hw/init.rc.
+    mkdir /config/usb_gadget/g1/functions/ffs.mtp 0770 shell shell
+    mkdir /dev/ffs-mtp 0770 shell shell
+    mount functionfs mtp /dev/ffs-mtp rmode=0770,fmode=0660,uid=1024,gid=1024
+
+# === MTP + ADB simultaneously (single UDC, one composite gadget) ===
+# TWRP Enable_MTP sets sys.usb.config=mtp,adb then starts its MtpServer,
+# which writes FunctionFS descriptors ~0.8 s later. setup_usb.sh re-binds
+# the UDC once descriptors are in place.
+
+on property:sys.usb.config=mtp,adb && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/idVendor 0x18D1
+    write /config/usb_gadget/g1/idProduct 0x4EE2
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "mtp_adb"
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    rm /config/usb_gadget/g1/configs/b.1/f3
+    symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
+    symlink /config/usb_gadget/g1/functions/ffs.mtp /config/usb_gadget/g1/configs/b.1/f2
+    setprop sys.usb.ffs.mtp.ready 1
+    setprop sys.usb.state ${sys.usb.config}
+
+on property:sys.usb.config=sideload,mtp && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/idVendor 0x18D1
+    write /config/usb_gadget/g1/idProduct 0x4EE1
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "sideload_mtp"
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    rm /config/usb_gadget/g1/configs/b.1/f3
+    symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
+    symlink /config/usb_gadget/g1/functions/ffs.mtp /config/usb_gadget/g1/configs/b.1/f2
+    setprop sys.usb.ffs.mtp.ready 1
+    setprop sys.usb.state ${sys.usb.config}
+
+# Keep recovery USB id consistent with stock recovery (hw/init.rc only sets idProduct)
+on property:sys.usb.config=adb && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/idVendor 0x18D1
+
+on property:sys.usb.config=fastboot && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/idVendor 0x18D1
