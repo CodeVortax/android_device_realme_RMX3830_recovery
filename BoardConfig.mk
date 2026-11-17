@@ -14,7 +14,6 @@ ALLOW_MISSING_DEPENDENCIES := true
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += \
     boot \
-    init_boot \
     vendor_boot \
     dtbo \
     system \
@@ -23,7 +22,6 @@ AB_OTA_PARTITIONS += \
     vendor \
     odm \
     vendor_dlkm \
-    system_dlkm \
     vbmeta \
     vbmeta_system \
     vbmeta_vendor \
@@ -98,7 +96,7 @@ BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
 BOARD_SUPER_PARTITION_SIZE := 8388608000
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 8384413696
 
 # Verified Boot
