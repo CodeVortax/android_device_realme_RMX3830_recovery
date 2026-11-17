@@ -14,7 +14,7 @@ on:
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
-        default: 'https://github.com/SamuraiArtem/android_device_realme_RMX3830_recovery'
+        default: 'https://github.com/CodeVortax/android_device_realme_RMX3830_recovery'
       DEVICE_TREE_BRANCH:
         description: 'DEVICE_TREE_BRANCH'
         required: true

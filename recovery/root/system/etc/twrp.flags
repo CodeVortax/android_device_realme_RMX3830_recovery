@@ -1,30 +1,45 @@
-/system_image_a          emmc     /dev/block/mapper/system_a                   flags=backup=1;flashimg=1;display="System Image A"
-/vendor_image_a          emmc     /dev/block/mapper/vendor_a                   flags=backup=1;flashimg=1;display="Vendor Image A"
-/system_image_b          emmc     /dev/block/mapper/system_b                   flags=backup=1;flashimg=1;display="System Image B"
-/vendor_image_b          emmc     /dev/block/mapper/vendor_b                   flags=backup=1;flashimg=1;display="Vendor Image B"
-/data                    f2fs     /dev/block/by-name/userdata                  flags=display="Data";storage;wipeingui;backup=1
+# Kernel & Recovery
+/boot                    emmc     /dev/block/by-name/boot                      flags=display="Boot";slotselect;backup=1;flashimg=1
+/init_boot               emmc     /dev/block/by-name/init_boot                 flags=display="Init Boot";slotselect;backup=1;flashimg=1
+/vendor_boot             emmc     /dev/block/by-name/vendor_boot               flags=display="Vendor Boot";slotselect;backup=1;flashimg=1
+/dtbo                    emmc     /dev/block/by-name/dtbo                      flags=display="DTBO";slotselect;backup=1;flashimg=1
+/dtb                     emmc     /dev/block/by-name/dtb                       flags=display="DTB";slotselect;backup=1;flashimg=1
 
-# Dynamic Partitions
-/boot                    emmc     /dev/block/by-name/boot                      flags=display=Boot;slotselect;backup=1;flashimg=1
-/dtbo                    emmc     /dev/block/by-name/dtbo                      flags=display=dtbo;slotselect;backup=1
-/misc                    emmc     /dev/block/by-name/misc                      flags=display=misc;backup=1
-/metadata                f2fs     /dev/block/by-name/metadata                  flags=display=metadata;backup=1
+# VBMeta
+/vbmeta                  emmc     /dev/block/by-name/vbmeta                    flags=display="VBMeta";slotselect;backup=1;flashimg=1
+/vbmeta_system           emmc     /dev/block/by-name/vbmeta_system             flags=display="VBMeta System";slotselect;backup=1;flashimg=1
+/vbmeta_vendor           emmc     /dev/block/by-name/vbmeta_vendor             flags=display="VBMeta Vendor";slotselect;backup=1;flashimg=1
+/vbmeta_product          emmc     /dev/block/by-name/vbmeta_product            flags=display="VBMeta Product";slotselect;backup=1;flashimg=1
+/vbmeta_odm              emmc     /dev/block/by-name/vbmeta_odm                flags=display="VBMeta ODM";slotselect;backup=1;flashimg=1
+/vbmeta_system_ext       emmc     /dev/block/by-name/vbmeta_system_ext         flags=display="VBMeta System Ext";slotselect;backup=1;flashimg=1
 
-# Removable storage
-/external_sd             auto     /dev/block/mmcblk1p1                         flags=display="External SD-card";storage;wipeingui;backup=1;removable;fsflags="utf8"
-/usb-otg                 auto     /dev/block/sdd        /dev/block/sdd1        flags=display="USB-OTG";storage;backup=1;removable
+# Storage
+/metadata                f2fs     /dev/block/by-name/metadata                  flags=display="Metadata";backup=1
+/external_sd             auto     /dev/block/mmcblk1p1                         flags=display="MicroSD Card";storage;wipeingui;removable;fsflags="utf8"
+/usb_otg                 auto     /dev/block/sdd1        /dev/block/sdd        flags=display="USB-OTG";storage;wipeingui;removable
 
-# Other partitions
-/spl                     emmc     /dev/block/mmcblk0boot0                      flags=display=spl;backup=1
-/spl_bk                  emmc     /dev/block/mmcblk0boot1                      flags=display=spl_bk;backup=1
-/uboot                   emmc     /dev/block/by-name/uboot                     flags=display="u-boot";slotselect;backup=1;flashimg=1
-/sml                     emmc     /dev/block/by-name/sml                       flags=display=sml;slotselect;backup=1;flashimg=1
-/tos                     emmc     /dev/block/by-name/trustos                   flags=display=tos;slotselect;backup=1;flashimg=1
-/teecfg                  emmc     /dev/block/by-name/teecfg                    flags=display=teecfg;slotselect;backup=1;flashimg=1
-/deltanv                 emmc     /dev/block/by-name/l_deltanv                 flags=display=deltanv;slotselect;backup=1;flashimg=1
-/ltefixnv1               emmc     /dev/block/by-name/l_fixnv1                  flags=display=ltefixnv1;slotselect;backup=1;flashimg=1
-/ltefixnv2               emmc     /dev/block/by-name/l_fixnv2                  flags=display=ltefixnv2;slotselect;backup=1;flashimg=1
-/cache                   f2fs     /dev/block/by-name/cache                     flags=display=cache;wipeingui;backup=0
-/pmsys                   emmc     /dev/block/by-name/pm_sys                    flags=display=pmsys;slotselect;backup=1;flashimg=1
-/fbootlogo               emmc     /dev/block/by-name/fbootlogo                 flags=display="Fastboot logo";backup=1;flashimg=1
-/logo                    emmc     /dev/block/by-name/logo                      flags=display="Boot logo";backup=1;flashimg=1
+# Bootloaders & Security
+/spl                     emmc     /dev/block/by-name/spl                       flags=display="SPL";slotselect;backup=1
+/spl_bk                  emmc     /dev/block/mmcblk0boot1                      flags=display="SPL Backup";backup=1
+/uboot                   emmc     /dev/block/by-name/uboot                     flags=display="U-Boot";slotselect;backup=1;flashimg=1
+/sml                     emmc     /dev/block/by-name/sml                       flags=display="SML";slotselect;backup=1;flashimg=1
+/tos                     emmc     /dev/block/by-name/trustos                   flags=display="TrustOS";slotselect;backup=1;flashimg=1
+/teecfg                  emmc     /dev/block/by-name/teecfg                    flags=display="TEE CFG";slotselect;backup=1;flashimg=1
+/pm_sys                  emmc     /dev/block/by-name/pm_sys                    flags=display="PM SYS";slotselect;backup=1;flashimg=1
+
+# Radio / Modem / NV
+/deltanv                 emmc     /dev/block/by-name/l_deltanv                 flags=display="Delta NV";slotselect;backup=1
+/ltefixnv1               emmc     /dev/block/by-name/l_fixnv1                  flags=display="LTE Fix NV1";slotselect;backup=1
+/ltefixnv2               emmc     /dev/block/by-name/l_fixnv2                  flags=display="LTE Fix NV2";slotselect;backup=1
+/l_modem                 emmc     /dev/block/by-name/l_modem                   flags=display="Modem";slotselect;backup=1
+/l_gdsp                  emmc     /dev/block/by-name/l_gdsp                    flags=display="GDSP";slotselect;backup=1
+/l_ldsp                  emmc     /dev/block/by-name/l_ldsp                    flags=display="LDSP";slotselect;backup=1
+/l_agdsp                 emmc     /dev/block/by-name/l_agdsp                   flags=display="AGDSP";slotselect;backup=1
+/persist                 emmc     /dev/block/by-name/persist                   flags=display="Persist";backup=1
+/prodnv                  emmc     /dev/block/by-name/prodnv                    flags=display="Prod NV";backup=1
+
+# Misc & Cache
+/misc                    emmc     /dev/block/by-name/misc                      flags=display="Misc";backup=1
+/cache                   f2fs     /dev/block/by-name/cache                     flags=display="Cache";wipeingui;backup=0
+/fbootlogo               emmc     /dev/block/by-name/fbootlogo                 flags=display="Fastboot Logo";backup=1;flashimg=1
+/logo                    emmc     /dev/block/by-name/logo                      flags=display="Boot Logo";backup=1;flashimg=1

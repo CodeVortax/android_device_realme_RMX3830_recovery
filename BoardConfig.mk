@@ -13,17 +13,23 @@ ALLOW_MISSING_DEPENDENCIES := true
 # A/B
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += \
-    odm \
-    vendor \
-    dtbo \
-    system_ext \
-    vbmeta_vendor \
-    vbmeta \
     boot \
+    init_boot \
+    vendor_boot \
+    dtbo \
     system \
-    vbmeta_system \
+    system_ext \
+    product \
+    vendor \
+    odm \
     vendor_dlkm \
-    product
+    system_dlkm \
+    vbmeta \
+    vbmeta_system \
+    vbmeta_vendor \
+    vbmeta_product \
+    vbmeta_odm \
+    vbmeta_system_ext
 
 #vendor_boot configuration
 TARGET_NO_RECOVERY := true
@@ -65,7 +71,7 @@ BOARD_KERNEL_IMAGE_NAME = Image
 TARGET_SCREEN_DENSITY := 320
  
 BOARD_VENDOR_BASE := 0x00000000
-BOARD_VENDOR_CMDLINE := "console=ttyS1,115200n8 bootconfig bootconfig"
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_RAMDISK_OFFSET := 0x05400000
 BOARD_KERNEL_OFFSET := 0x00008000
@@ -78,8 +84,8 @@ BOARD_MKBOOTIMG_ARGS += --kernel_offset $(BOARD_KERNEL_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_TAGS_OFFSET)
 BOARD_PREBUILT_DTBIMAGE := $(DEVICE_PATH)/prebuilt/dtb.img
-BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+BOARD_KERNEL_SEPARATED_DTBO := true
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 262144 # (BOARD_KERNEL_PAGESIZE * 64)
@@ -90,14 +96,10 @@ TARGET_COPY_OUT_VENDOR := vendor
 BOARD_SYSTEMIMAGE_PARTITION_TYPE := erofs
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
-BOARD_SUPER_PARTITION_SIZE := 9126805504
+BOARD_SUPER_PARTITION_SIZE := 8388608000
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system system_ext vendor odm product vendor_dlkm
-BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200
-
-# DTB and dtb
-BOARD_KERNEL_SEPARATED_DTBO := true
-TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
+BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 8384413696
 
 # Verified Boot
  BOARD_AVB_ENABLE := true
@@ -118,7 +120,6 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
-BOARD_HAS_LARGE_FILESYSTEM := true
 RECOVERY_SDCARD_ON_DATA := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /dev/block/loop%d
 TARGET_USES_MKE2FS := true
@@ -152,7 +153,6 @@ TW_MAX_BRIGHTNESS := 4095
 TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone1/temp"
 TW_DEFAULT_BRIGHTNESS := 3338
 TW_CUSTOM_BATTERY_PATH := /sys/devices/platform/charger-manager/power_supply/battery
-TW_USE_LEGACY_BATTERY_SERVICES := true
 TW_Y_OFFSET := 45
 TW_H_OFFSET := -45
 

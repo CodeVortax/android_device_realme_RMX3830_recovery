@@ -9,6 +9,15 @@ if [ ! -e /dev/block/by-name ]; then
     done
 fi
 
+# Detect active slot if ro.boot.slot_suffix was not exported by bootloader
+if [ -z "$(getprop ro.boot.slot_suffix)" ]; then
+    slot=$(grep -oE "sprdboot\.slot_suffix=_[ab]" /proc/cmdline 2>/dev/null | cut -d= -f2)
+    [ -z "$slot" ] && slot=$(grep -oE "androidboot\.slot_suffix=_[ab]" /proc/cmdline 2>/dev/null | cut -d= -f2)
+    [ -z "$slot" ] && slot=$(grep -oE "androidboot\.slot_suffix\s*=\s*\"_[ab]\"" /proc/bootconfig 2>/dev/null | grep -oE "_[ab]")
+    [ -z "$slot" ] && slot="_a"
+    setprop ro.boot.slot_suffix "$slot"
+fi
+
 # Wait for the UDC to appear (musb modules are insmodded in recovery.sprd.rc).
 i=0
 UDC=""

@@ -225,6 +225,8 @@ service setup_usb /system/bin/setup_usb.sh
     seclabel u:r:su:s0
 
 on init
+    # Ensure compat symlink for Unisoc platform path exists early
+    symlink /dev/block/platform/soc/soc:ap-apb/201d0000.sdio/by-name /dev/block/by-name
     # The Unisoc bootloader does not export androidboot.slot_suffix on this
     # device, so ro.boot.slot_suffix is empty and TWRP guesses slot B
     # (PartitionManager treats any suffix != "_a" as B). First-stage init maps
