@@ -146,6 +146,11 @@ jobs:
         git apply --verbose ./${{ github.event.inputs.DEVICE_PATH }}/patches/twfunc-fastbootd-userspace.patch || true
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
+    - name: Fix Android 14 NDK platform library names
+      run: |
+        find bootable/recovery -type f \( -name "Android.mk" -o -name "Android.bp" \) -exec sed -i 's/-ndk_platform/-ndk/g' {} +
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:
