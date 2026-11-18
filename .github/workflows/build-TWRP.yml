@@ -157,7 +157,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         if [[ "${{ github.event.inputs.MANIFEST_BRANCH }}" == twrp-14* ]] || [[ "${{ github.event.inputs.MANIFEST_BRANCH }}" == twrp-15* ]]; then
-            lunch ${{ github.event.inputs.MAKEFILE_NAME }}-trunk_staging-eng || lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng
+            lunch ${{ github.event.inputs.MAKEFILE_NAME }}-ap2a-eng || lunch ${{ github.event.inputs.MAKEFILE_NAME }}-trunk_staging-eng || lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng
         else
             lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng
         fi
