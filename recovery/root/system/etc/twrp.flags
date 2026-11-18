@@ -1,9 +1,17 @@
 # Kernel & Recovery
-/boot                    emmc     /dev/block/by-name/boot                      flags=display="Boot";slotselect;backup=1;flashimg=1
+/boot                    emmc     /dev/block/by-name/boot                      flags=display="Boot (Kernel)";slotselect;backup=1;flashimg=1
 /init_boot               emmc     /dev/block/by-name/init_boot                 flags=display="Init Boot";slotselect;backup=1;flashimg=1
 /vendor_boot             emmc     /dev/block/by-name/vendor_boot               flags=display="Vendor Boot";slotselect;backup=1;flashimg=1
 /dtbo                    emmc     /dev/block/by-name/dtbo                      flags=display="DTBO";slotselect;backup=1;flashimg=1
 /dtb                     emmc     /dev/block/by-name/dtb                       flags=display="DTB";slotselect;backup=1;flashimg=1
+
+# Dynamic Partitions (Flashable Images)
+/system_image            emmc     /dev/block/mapper/system                     flags=display="System Image";backup=1;flashimg=1;slotselect
+/vendor_image            emmc     /dev/block/mapper/vendor                     flags=display="Vendor Image";backup=1;flashimg=1;slotselect
+/product_image           emmc     /dev/block/mapper/product                    flags=display="Product Image";backup=1;flashimg=1;slotselect
+/system_ext_image        emmc     /dev/block/mapper/system_ext                 flags=display="System Ext Image";backup=1;flashimg=1;slotselect
+/odm_image               emmc     /dev/block/mapper/odm                        flags=display="ODM Image";backup=1;flashimg=1;slotselect
+/vendor_dlkm_image       emmc     /dev/block/mapper/vendor_dlkm                flags=display="Vendor DLKM Image";backup=1;flashimg=1;slotselect
 
 # VBMeta
 /vbmeta                  emmc     /dev/block/by-name/vbmeta                    flags=display="VBMeta";slotselect;backup=1;flashimg=1
@@ -31,6 +39,9 @@
 /deltanv                 emmc     /dev/block/by-name/l_deltanv                 flags=display="Delta NV";slotselect;backup=1
 /ltefixnv1               emmc     /dev/block/by-name/l_fixnv1                  flags=display="LTE Fix NV1";slotselect;backup=1
 /ltefixnv2               emmc     /dev/block/by-name/l_fixnv2                  flags=display="LTE Fix NV2";slotselect;backup=1
+/l_runtimenv1            emmc     /dev/block/by-name/l_runtimenv1              flags=display="LTE Runtime NV1";backup=1
+/l_runtimenv2            emmc     /dev/block/by-name/l_runtimenv2              flags=display="LTE Runtime NV2";backup=1
+/calinv                  emmc     /dev/block/by-name/calinv                    flags=display="Calibration NV";backup=1
 /l_modem                 emmc     /dev/block/by-name/l_modem                   flags=display="Modem";slotselect;backup=1
 /l_gdsp                  emmc     /dev/block/by-name/l_gdsp                    flags=display="GDSP";slotselect;backup=1
 /l_ldsp                  emmc     /dev/block/by-name/l_ldsp                    flags=display="LDSP";slotselect;backup=1
@@ -38,8 +49,10 @@
 /persist                 emmc     /dev/block/by-name/persist                   flags=display="Persist";backup=1
 /prodnv                  emmc     /dev/block/by-name/prodnv                    flags=display="Prod NV";backup=1
 
-# Misc & Cache
+# Misc, Calibration & Cache
 /misc                    emmc     /dev/block/by-name/misc                      flags=display="Misc";backup=1
+/miscdata                emmc     /dev/block/by-name/miscdata                  flags=display="Misc Data";backup=1
+/ocdt                    emmc     /dev/block/by-name/ocdt                      flags=display="OCDT";slotselect;backup=1
 /cache                   f2fs     /dev/block/by-name/cache                     flags=display="Cache";wipeingui;backup=0
 /fbootlogo               emmc     /dev/block/by-name/fbootlogo                 flags=display="Fastboot Logo";backup=1;flashimg=1
 /logo                    emmc     /dev/block/by-name/logo                      flags=display="Boot Logo";backup=1;flashimg=1

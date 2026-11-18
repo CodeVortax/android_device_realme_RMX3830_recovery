@@ -10,7 +10,7 @@ on:
       MANIFEST_BRANCH:
         description: 'MANIFEST_BRANCH'
         required: true
-        default: 'twrp-12.1'
+        default: 'twrp-14.1'
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
@@ -131,21 +131,19 @@ jobs:
       uses: haya14busa/action-cond@v1
       id: buildtree
       with:
-        cond: ${{ github.event.inputs.MANIFEST_BRANCH == 'twrp-11' || github.event.inputs.MANIFEST_BRANCH == 'twrp-12.1' }}
+        cond: ${{ startsWith(github.event.inputs.MANIFEST_BRANCH, 'twrp-') }}
         if_true: twrp
         if_false: omni
 
-    # hey whoever reads this, this is need to make the TWRP work. on my UNISOCs the screen doesn't display without this fix
-    - name: Clone fixed bootable/recovery 
+    # Unisoc DRM display fix by @cooked71 (avoids screen blackout on Unisoc DRM drivers)
+    - name: Apply Unisoc DRM graphics fix
       run: |
-        rm -rf bootable/recovery
-        git clone https://github.com/kyros70/android_bootable_recovery \
-          -b android-12.1 bootable/recovery
+        cp ./${{ github.event.inputs.DEVICE_PATH }}/patches/graphics_drm.cpp bootable/recovery/minuitwrp/graphics_drm.cpp
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Apply fastbootd userspace patch
       run: |
-        git apply --verbose ./${{ github.event.inputs.DEVICE_PATH }}/patches/twfunc-fastbootd-userspace.patch
+        git apply --verbose ./${{ github.event.inputs.DEVICE_PATH }}/patches/twfunc-fastbootd-userspace.patch || true
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Set Swap Space
