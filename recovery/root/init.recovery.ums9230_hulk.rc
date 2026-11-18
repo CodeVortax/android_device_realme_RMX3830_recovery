@@ -5,6 +5,7 @@ on init
     # Unisoc puts by-name under the platform path; create the compat
     # symlink so /dev/block/by-name/* works for TWRP fstab and twrp.flags
     symlink /dev/block/platform/soc/soc\:ap-apb/201d0000.sdio/by-name /dev/block/by-name
+    symlink /dev/block/platform/soc/soc\:ap-apb/201d0000.sdio/by-name /dev/block/bootdevice/by-name
 
 service setup_usb /system/bin/setup_usb.sh
     user root
@@ -13,7 +14,8 @@ service setup_usb /system/bin/setup_usb.sh
     seclabel u:r:su:s0
 
 on boot
-    start boot-hal-1-0
+    insmod /lib/modules/sc27xx-vibra.ko
+    start boot-hal-1-2
     start health-hal-2-1
     start setup_usb
     insmod /lib/modules/sc27xx_tsensor_thermal.ko

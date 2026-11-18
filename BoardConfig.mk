@@ -142,6 +142,7 @@ TW_FRAMERATE := 60
 TW_THEME := portrait_hdpi
 TW_EXTRA_LANGUAGES := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
+TW_SUPPORT_INPUT_1_2_HAPTICS := true
 # chipone CTS touch dies after suspend/resume (ESD reset + firmware reload
 # fails), so never let the screen time out.
 TW_NO_SCREEN_TIMEOUT := true

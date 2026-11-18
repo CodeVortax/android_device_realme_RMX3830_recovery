@@ -227,6 +227,7 @@ service setup_usb /system/bin/setup_usb.sh
 on init
     # Ensure compat symlink for Unisoc platform path exists early
     symlink /dev/block/platform/soc/soc:ap-apb/201d0000.sdio/by-name /dev/block/by-name
+    symlink /dev/block/platform/soc/soc:ap-apb/201d0000.sdio/by-name /dev/block/bootdevice/by-name
     # The Unisoc bootloader does not export androidboot.slot_suffix on this
     # device, so ro.boot.slot_suffix is empty and TWRP guesses slot B
     # (PartitionManager treats any suffix != "_a" as B). First-stage init maps
@@ -236,12 +237,15 @@ on init
 on boot
     # RTC (fixes 1969/1970 epoch date)
     insmod /vendor/lib/modules/rtc-sc27xx.ko
+    # Vibrator / Haptics
+    insmod /lib/modules/sc27xx-vibra.ko
     # USB device stack: phy -> musb core -> glue (without musb_hdrc.ko
     # /sys/class/udc stays empty and the phone is invisible to the PC)
     insmod /vendor/lib/modules/phy-sprd-commonphy.ko
     insmod /vendor/lib/modules/phy-sprd-qogirl6.ko
     insmod /vendor/lib/modules/musb_hdrc.ko
     insmod /vendor/lib/modules/musb_sprd.ko
+    start boot-hal-1-2
     start health-hal-2-1
     start setup_usb
     insmod /lib/modules/sc27xx_tsensor_thermal.ko

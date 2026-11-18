@@ -8,6 +8,10 @@ if [ ! -e /dev/block/by-name ]; then
         fi
     done
 fi
+if [ ! -e /dev/block/bootdevice/by-name ] && [ -e /dev/block/by-name ]; then
+    mkdir -p /dev/block/bootdevice
+    ln -s /dev/block/by-name /dev/block/bootdevice/by-name 2>/dev/null
+fi
 
 # Detect active slot if ro.boot.slot_suffix was not exported by bootloader
 if [ -z "$(getprop ro.boot.slot_suffix)" ]; then
