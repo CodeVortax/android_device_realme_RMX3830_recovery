@@ -20,14 +20,14 @@ odm                                      /odm                ext4    ro    wait,
 vendor                                   /vendor             erofs   ro    wait,logical,slotselect
 vendor                                   /vendor             ext4    ro    wait,logical,slotselect
 
-# metadata is needed for Virtual A/B snapshot handling
-/dev/block/by-name/metadata              /metadata           f2fs    defaults     wait,check,formattable
-/dev/block/by-name/metadata              /metadata           ext4    defaults     wait,check,formattable
+# metadata is needed for Virtual A/B snapshot handling and metadata encryption
+/dev/block/by-name/metadata        /metadata      f2fs      nodev,noatime,nosuid                      wait,formattable,first_stage_mount,check,display=Metadata
+/dev/block/by-name/metadata        /metadata      ext4      nodev,noatime,nosuid,errors=panic         wait,formattable,first_stage_mount,check,display=Metadata
 
 /dev/block/mmcblk1p1                     /external_sd        auto    defaults     defaults
 /dev/block/sdd1                          /usb_otg            auto    defaults     defaults
 
-# userdata
-/dev/block/by-name/userdata              /data               f2fs    defaults     wait,check,formattable
-/dev/block/by-name/userdata              /data               ext4    defaults     wait,check,formattable
+# userdata (FBE v2 inlinecrypt + metadata encryption from Note 60 / stock)
+/dev/block/by-name/userdata        /data          f2fs      noatime,nosuid,nodev,discard,reserve_root=32768,resgid=1065,inline_xattr,inline_data,inlinecrypt,fsync_mode=nobarrier,atgc   latemount,wait,quota,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,reservedsize=128M,checkpoint=fs,formattable,display=Data
+/dev/block/by-name/userdata        /data          ext4      noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc   latemount,wait,quota,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,reservedsize=128M,checkpoint=fs,formattable,display=Data
 /dev/block/by-name/misc                  /misc               emmc    defaults     defaults

@@ -81,7 +81,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '11'
+        java-version: ${{ startsWith(github.event.inputs.MANIFEST_BRANCH, 'twrp-14') && '17' || '11' }}
 
     - name: Setup SSH Keys
       if: ${{ startsWith(github.event.inputs.MANIFEST_URL, 'git@github.com') || 
@@ -156,7 +156,12 @@ jobs:
         sed -i 's/return sandboxConfig\.working/return false/g' build/soong/ui/build/sandbox_linux.go 2>/dev/null || true
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
-        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
+        if [[ "${{ github.event.inputs.MANIFEST_BRANCH }}" == twrp-14* ]] || [[ "${{ github.event.inputs.MANIFEST_BRANCH }}" == twrp-15* ]]; then
+            lunch ${{ github.event.inputs.MAKEFILE_NAME }}-trunk_staging-eng || lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng
+        else
+            lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng
+        fi
+        make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Upload to Release

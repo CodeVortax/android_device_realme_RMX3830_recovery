@@ -1,6 +1,9 @@
 #add for board init.rc for recovery mode
 import /init.recovery.common.rc
 
+on fs
+    setprop crypto.ready 1
+
 on init
     # Unisoc puts by-name under the platform path; create the compat
     # symlink so /dev/block/by-name/* works for TWRP fstab and twrp.flags
