@@ -161,6 +161,11 @@ jobs:
         # th_read() sized the policy from an uninitialised struct; zero it first.
         sed -i 's/(fscrypt_policy\*)malloc(sizeof(fscrypt_policy))/(fscrypt_policy*)calloc(1, sizeof(fscrypt_policy))/' bootable/recovery/libtar/block.c
         grep -n "calloc(1, sizeof(fscrypt_policy))" bootable/recovery/libtar/block.c
+        # twrpTar.cpp and partitions.hpp live outside libtar/, so their quoted
+        # include skips the shadow header and picks vold's (different guard ->
+        # "conflicting types for lookup_ref_key" etc.). Point them at the shadow.
+        sed -i 's|#include "fscrypt_policy.h"|#include "libtar/fscrypt_policy.h"|' bootable/recovery/twrpTar.cpp bootable/recovery/partitions.hpp
+        grep -n "fscrypt_policy.h" bootable/recovery/twrpTar.cpp bootable/recovery/partitions.hpp
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     # libtar links libvold.a statically; android-14.1 libvold also needs
