@@ -163,6 +163,18 @@ jobs:
         grep -n "calloc(1, sizeof(fscrypt_policy))" bootable/recovery/libtar/block.c
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
+    # libtar links libvold.a statically; android-14.1 libvold also needs
+    # libasync_safe, libboot_control_client and libsysutils (undefined-symbol
+    # errors at the libtar.so link otherwise).
+    - name: Fix TWRP 14.1 libtar link deps
+      if: ${{ startsWith(github.event.inputs.MANIFEST_BRANCH, 'twrp-14') || startsWith(github.event.inputs.MANIFEST_BRANCH, 'twrp-15') }}
+      run: |
+        P="$PWD/${{ github.event.inputs.DEVICE_PATH }}/patches/libtar_link_deps.patch"
+        cd bootable/recovery
+        git apply --verbose "$P"
+        grep -n "libsysutils" libtar/Android.mk
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:
