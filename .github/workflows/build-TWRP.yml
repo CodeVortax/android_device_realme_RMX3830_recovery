@@ -151,6 +151,18 @@ jobs:
         find bootable/recovery -type f \( -name "Android.mk" -o -name "Android.bp" \) -exec sed -i 's/-ndk_platform/-ndk/g' {} +
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
+    # TWRP android-14.1 libtar expects the fscrypt_policy union + get_policy*()
+    # helpers that android-14.1 system/vold no longer provides. Shadow the vold
+    # header from inside libtar/ (quote-include resolves there first).
+    - name: Fix TWRP 14.1 libtar fscrypt policy API
+      if: ${{ startsWith(github.event.inputs.MANIFEST_BRANCH, 'twrp-14') || startsWith(github.event.inputs.MANIFEST_BRANCH, 'twrp-15') }}
+      run: |
+        cp ./${{ github.event.inputs.DEVICE_PATH }}/patches/libtar_fscrypt_policy.h bootable/recovery/libtar/fscrypt_policy.h
+        # th_read() sized the policy from an uninitialised struct; zero it first.
+        sed -i 's/(fscrypt_policy\*)malloc(sizeof(fscrypt_policy))/(fscrypt_policy*)calloc(1, sizeof(fscrypt_policy))/' bootable/recovery/libtar/block.c
+        grep -n "calloc(1, sizeof(fscrypt_policy))" bootable/recovery/libtar/block.c
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:
